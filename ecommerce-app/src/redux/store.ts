@@ -1,14 +1,25 @@
 import { configureStore } from '@reduxjs/toolkit';
-import cartReducer from './features/cartSlice';
+import createSagaMiddleware from 'redux-saga';
 import productReducer from './features/productSlice';
+import cartReducer from './features/cartSlice';
+import authReducer from './features/authSlice';
+
+import rootSaga from './sagas';
+
+const sagaMiddleware = createSagaMiddleware();
 
 const store = configureStore({
   reducer: {
-    cart: cartReducer,
     products: productReducer,
+    cart: cartReducer,
+    auth:authReducer
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({ thunk: false }).concat(sagaMiddleware),
 });
 
-export default store;
+sagaMiddleware.run(rootSaga);
+
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+export default store;
