@@ -1,7 +1,4 @@
-import React from 'react';
 import { useLocation } from 'react-router-dom';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
 
 const OrderConfirmationPage = () => {
   const location = useLocation();
@@ -13,7 +10,6 @@ const OrderConfirmationPage = () => {
 
   return (
     <div>
-      <Header />
       <div className="container mx-auto py-8">
         <h2 className="text-3xl font-bold mb-4">Order Confirmation</h2>
         <div className="bg-white p-6 shadow-md rounded-lg">
@@ -42,7 +38,6 @@ const OrderConfirmationPage = () => {
           </div>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };

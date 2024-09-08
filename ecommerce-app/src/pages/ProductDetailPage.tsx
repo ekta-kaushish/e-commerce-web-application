@@ -1,97 +1,83 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../redux/store';
 import { addToCart } from '../redux/features/cartSlice';
-import { FaShoppingCart, FaArrowLeft } from 'react-icons/fa';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import { fetchRelatedProducts } from '../redux/features/productSlice';
+import ProductCard from '../components/ProductCard';
 const ProductDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const product = useSelector((state: RootState) =>
     state.products.products.find((product) => product.id === parseInt(id!))
   );
-  const cartItems = useSelector((state: RootState) => state.cart.items);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const relatedProducts = useSelector((state: RootState) => state.products.relatedProducts);
 
+  const dispatch = useDispatch();
+  const [quantity, setQuantity] = useState(1);
+  
+  useEffect(() => {
+    // Ensure the product exists and has a category
+    if (product && typeof product.category === 'string') {
+      dispatch(fetchRelatedProducts(product.category)); // Dispatch with the category as a string
+    }
+  }, [dispatch, product]);
   if (!product) {
-    return <p className="text-center text-red-500">Product not found.</p>;
+    return <div>Product not found</div>;
   }
 
   const handleAddToCart = () => {
-    dispatch(addToCart(product));
-    alert('Item added to cart!');
-  };
-
-  const handleGoBack = () => {
-    navigate(-1); // Navigate back to the previous page
+    dispatch(addToCart({ ...product, quantity:quantity }));
+    alert(`${product.name} added to cart with quantity: ${quantity}`);
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen flex flex-col">
-                  <Header />
+    <div className="container mx-auto py-12">
+      <div className="flex flex-col lg:flex-row lg:space-x-10">
+        {/* Product Image */}
+        <div className="lg:w-1/2">
+          <img src={product.image} alt={product.name} className="w-full rounded-lg shadow-lg" />
+        </div>
 
+        {/* Product Details */}
+        <div className="lg:w-1/2 mt-8 lg:mt-0">
+          <h1 className="text-3xl font-bold text-gray-800 mb-4">{product.name}</h1>
+          <p className="text-xl text-gray-600 mb-4">${product.price}</p>
+          <p className="text-gray-700 mb-6">{product.description}</p>
 
-      {/* Back Button */}
-      <button
-        onClick={handleGoBack}
-        className="ml-6 mt-6 px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 flex items-center transition duration-300"
-      >
-        <FaArrowLeft className="mr-2" /> Back
-      </button>
-
-      {/* Product Detail Content */}
-      <div className="flex-1 container mx-auto py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 bg-white p-8 rounded-lg shadow-lg">
-          {/* Product Image */}
-          <div className="relative">
-            <img
-              src={product.image}
-              alt={product.name}
-              className="w-full h-full object-cover rounded-lg hover:scale-105 transition transform duration-300"
+          {/* Quantity Selection */}
+          <div className="flex items-center space-x-4 mb-6">
+            <label htmlFor="quantity" className="text-gray-600">Quantity:</label>
+            <input
+              type="number"
+              id="quantity"
+              min="1"
+              value={quantity}
+              onChange={(e) => setQuantity(parseInt(e.target.value))}
+              className="w-16 p-2 border border-gray-300 rounded"
             />
           </div>
 
-          {/* Product Details */}
-          <div className="flex flex-col justify-between">
-            <div>
-              <h1 className="text-4xl font-bold text-gray-800 mb-4">
-                {product.name}
-              </h1>
-              <p className="text-xl text-gray-600 mb-6">{product.description}</p>
-              {/* <div className="flex items-center mb-6">
-                
-                {[...Array(5)].map((star, index) => (
-                  <FaStar
-                    key={index}
-                    className={`text-yellow-500 ${
-                      index < product.rating ? 'text-yellow-500' : 'text-gray-300'
-                    }`}
-                  />
-                ))}
-                <span className="ml-3 text-gray-500">({product.rating})</span>
-              </div> */}
-              <p className="text-3xl font-bold text-gray-900 mb-6">
-                ${product.price}
-              </p>
-            </div>
-
-            {/* Add to Cart */}
-            <button
-              onClick={handleAddToCart}
-              className="bg-blue-600 text-white text-lg font-semibold py-3 px-6 rounded-lg hover:bg-blue-700 flex items-center justify-center transition duration-300"
-            >
-              <FaShoppingCart className="mr-2" /> Add to Cart
-            </button>
-          </div>
+          {/* Add to Cart Button */}
+          <button
+            onClick={handleAddToCart}
+            className="bg-blue-600 text-white px-6 py-3 rounded shadow hover:bg-blue-500 transition"
+          >
+            Add to Cart
+          </button>
         </div>
       </div>
 
-      <Footer />
-
+      {/* Related Products */}
+      <div className="mt-12">
+        <h2 className="text-2xl font-bold mb-6">Related Products</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 fade-in">
+        {relatedProducts.map((relatedProduct) => (
+          <ProductCard key={relatedProduct.id} product={relatedProduct} isInCart={false} />
+        ))}
+        </div>
+      </div>
     </div>
   );
 };
 
 export default ProductDetailPage;
-

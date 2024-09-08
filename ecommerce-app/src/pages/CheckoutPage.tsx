@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../redux/store';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
 import { useNavigate } from 'react-router-dom';
 import { clearCart } from '../redux/features/cartSlice';
 
@@ -42,8 +40,6 @@ const CheckoutPage = () => {
   };
 
   return (
-    <>
-      <Header />
       <div className="container mx-auto py-8">
         <h2 className="text-3xl font-bold mb-4">Checkout</h2>
         {cartItems.length === 0 ? (
@@ -129,8 +125,6 @@ const CheckoutPage = () => {
           </div>
         )}
       </div>
-      <Footer />
-    </>
   );
 };
 

@@ -1,6 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Product } from '../../types';
+import { saveCartToLocalStorage, loadCartFromLocalStorage } from '../../utils/localStorage';
 
+const preloadedState = {
+  cart: loadCartFromLocalStorage() || { items: [], totalQuantity: 0 },
+};
 interface CartItem extends Product {
   quantity: number;
   id:any;
@@ -23,9 +27,10 @@ const cartSlice = createSlice({
     addToCart: (state, action: PayloadAction<Product>) => {
       const existingItem = state.items.find((item) => item.id === action.payload.id);
       if (existingItem) {
-        existingItem.quantity += 1;
+        existingItem.quantity = action.payload.quantity ?? +1;
       } else {
-        state.items.push({ ...action.payload, quantity: 1 });
+        state.items.push({ ...action.payload,quantity: action.payload.quantity ?? 1,
+        });
       }
       state.totalQuantity += 1;
     },

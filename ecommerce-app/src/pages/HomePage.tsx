@@ -3,8 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { fetchProductsRequest } from '../redux/features/productSlice';
 import ProductCard from '../components/ProductCard';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
 const HomePage = () => {
   const dispatch = useDispatch();
   const { products, loading, error } = useSelector((state: RootState) => state.products);
@@ -16,8 +14,7 @@ const HomePage = () => {
   }, [dispatch]);
 
   return (
-    <div className="bg-gray-50 min-h-screen">
-            <Header />
+    <div >
       <section className="relative bg-gradient-to-r from-purple-500 to-blue-500 text-white text-center py-20">
         <div className="container mx-auto">
           <h1 className="text-5xl font-extrabold mb-4">Welcome to Our Shop</h1>
@@ -48,7 +45,6 @@ const HomePage = () => {
           )}
         </div>
       </section>
-      <Footer />
     </div>
   );
 };
